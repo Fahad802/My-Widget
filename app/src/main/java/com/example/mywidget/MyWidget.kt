@@ -7,8 +7,11 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.Log
 import android.widget.RemoteViews
+import android.widget.TextClock
+import androidx.annotation.RequiresApi
 
 class MyWidget : AppWidgetProvider() {
 
@@ -25,8 +28,8 @@ class MyWidget : AppWidgetProvider() {
     override fun onReceive(context: Context?, intent: Intent?) {
         super.onReceive(context, intent)
 
-        val action = intent?.action
-        if (action.equals("switchClockFormat")){
+        val action = intent?.action?:""
+        if (action == "switchClockFormat"){
                 context?.let {
                     val sp = it.getSharedPreferences("SP", Context.MODE_PRIVATE)
                     val is24ClockFormat = sp.getBoolean("VALUE", false)?:false
@@ -60,7 +63,7 @@ class MyWidget : AppWidgetProvider() {
     ): PendingIntent?{
         val intent = Intent(context, javaClass)
         intent.action = action
-        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        return PendingIntent.getBroadcast(context, 10, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
     private fun updateWidgets(context: Context){
@@ -70,6 +73,7 @@ class MyWidget : AppWidgetProvider() {
             updateAppWidget(context, manager, id)
         }
     }
+
 
     private fun updateAppWidget(
         context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int
@@ -82,12 +86,12 @@ class MyWidget : AppWidgetProvider() {
         val is24ClockFormat = sp.getBoolean("VALUE", false)?:false
 
         if (is24ClockFormat){
-            views.setImageViewResource(R.id.clockFormatChangeImgBtn, R.drawable.off_24)
+            views.setImageViewResource(R.id.clockFormatChangeImgBtn, R.drawable.hours_24)
         }else{
-            views.setImageViewResource(R.id.clockFormatChangeImgBtn, R.drawable.on_12)
+            views.setImageViewResource(R.id.clockFormatChangeImgBtn, R.drawable.hours_12)
         }
 
-        //views.setTextViewText(R.id.appwidget_text, value.toString())
+        //val textClock: TextClock = views.viewId
 
         views.setOnClickPendingIntent(R.id.clockFormatChangeImgBtn, pendingIntent(context, "switchClockFormat"))
 
