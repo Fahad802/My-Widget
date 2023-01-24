@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
+import android.view.View
 import android.widget.RemoteViews
 import android.widget.TextClock
 import androidx.annotation.RequiresApi
@@ -30,12 +31,7 @@ class MyWidget : AppWidgetProvider() {
 
         val action = intent?.action?:""
         if (action == "switchClockFormat"){
-                context?.let {
-                    val sp = it.getSharedPreferences("SP", Context.MODE_PRIVATE)
-                    val is24ClockFormat = sp.getBoolean("VALUE", false)?:false
-                    sp.edit().putBoolean("VALUE", !is24ClockFormat).apply()
-                    updateWidgets(it)
-                }
+                context?.let { updateWidgets(it) }
         }
 
     }
@@ -83,17 +79,23 @@ class MyWidget : AppWidgetProvider() {
 
         // get update value
         val sp = context.getSharedPreferences("SP", Context.MODE_PRIVATE)
-        val is24ClockFormat = sp.getBoolean("VALUE", false)?:false
+
+        val is24ClockFormat = sp.getBoolean("VALUE", false)?: false
 
         if (is24ClockFormat){
+            sp.edit().putBoolean("VALUE", false).apply()
             views.setImageViewResource(R.id.clockFormatChangeImgBtn, R.drawable.hours_24)
+            views.setViewVisibility(R.id.textClock24, View.VISIBLE)
+            views.setViewVisibility(R.id.textClock12, View.GONE)
         }else{
+            sp.edit().putBoolean("VALUE", true).apply()
             views.setImageViewResource(R.id.clockFormatChangeImgBtn, R.drawable.hours_12)
+            views.setViewVisibility(R.id.textClock24, View.GONE)
+            views.setViewVisibility(R.id.textClock12, View.VISIBLE)
         }
 
-        //val textClock: TextClock = views.viewId
-
         views.setOnClickPendingIntent(R.id.clockFormatChangeImgBtn, pendingIntent(context, "switchClockFormat"))
+
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views)
