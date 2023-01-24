@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:contentDescription="@string/appwidget_text"
-        android:format24Hour="kk:mm:ss\nd MMM, yyyy"
+        android:format12Hour="kk:mm:ss\nd MMM, yyyy"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="44sp"
